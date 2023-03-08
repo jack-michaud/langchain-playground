@@ -1,3 +1,9 @@
+"""
+This is an attempt to create a polite chatbot.
+Currently, there are a few bugs with it: 
+- It keeps trying to rephrase the same sentence over and over again.
+- It tries to rephrase the input instead of its own output.
+"""
 from dotenv import load_dotenv
 from langchain.chains.conversation.memory import \
     ConversationSummaryBufferMemory
@@ -14,6 +20,14 @@ chatllm = OpenAIChat()
 llm = OpenAI()
 
 
+@tool("check_sentiment")
+def check_sentiment(text) -> str:
+    """Attitude check."""
+    return chatllm(
+        f"What is the tone of this sentence? Summarize with one word:\n{text}"
+    )
+
+
 @tool("rephrase")
 def filter(text) -> str:
     """Rephrase for politeness."""
@@ -25,16 +39,17 @@ def filter(text) -> str:
 agent = initialize_agent(
     [
         filter,
+        check_sentiment,
     ],
     llm,
     agent="zero-shot-react-description",
     verbose=True,
     memory=ConversationSummaryBufferMemory(
         llm=llm,
-        max_token_limit=60,
+        max_token_limit=70,
     ),
     agent_kwargs={
-        "prefix": "You are a friendly chatbot. Answers your responses to humans with humbleness.",
+        "prefix": "You are a friendly chatbot. Answers your responses to humans with humbleness. First try to answer the question and if it needs rephrasing, do so and answer with the rephrase.",
     },
 )
 
