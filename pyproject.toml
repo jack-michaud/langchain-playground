@@ -17,6 +17,10 @@ pypdf = "^3.5.0"
 pinecone-client = "^2.2.1"
 tiktoken = "^0.3.0"
 
+[tool.poetry.extras]
+load-raw-data = ["unstructured", "pypdf"]
+google-search = ["google-search-results"]
+
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.12.0"
