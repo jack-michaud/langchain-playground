@@ -1,4 +1,6 @@
 import subprocess
+from milvus_db import vector_db_wrapper, add_new_document_to_vector_db
+from langchain.docstore.document import Document
 
 from langchain.agents import tool
 
@@ -28,3 +30,17 @@ def query_personal_knowledge_management(query: str) -> str:
     response = subprocess.check_output(["rofi", "-dmenu", "-p", query])
 
     return f'You said: {response.decode("utf-8").strip()}'
+
+@tool("add_memory")
+def add_memory(document: str) -> str:
+    """Store a memory."""
+    milvus = vector_db_wrapper()
+    doc = Document(page_content=document)
+    add_new_document_to_vector_db(milvus, doc)
+    return f'I will contemplate what was said here.'
+
+@tool("search_memory")
+def search_memory(query: str) -> str:
+    """Store a memory."""
+    milvus = vector_db_wrapper()
+    return milvus.query(query)
