@@ -12,7 +12,7 @@ from langchain.llms import OpenAI, OpenAIChat
 
 from tools import ask_for_approval, send_message
 
-llm = OpenAI()
+llm = OpenAIChat()
 
 agent = initialize_agent(
     [
