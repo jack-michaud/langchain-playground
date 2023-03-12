@@ -1213,14 +1213,14 @@ files = [
 
 [[package]]
 name = "langchain"
-version = "0.0.101"
+version = "0.0.108"
 description = "Building applications with LLMs through composability"
 category = "main"
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "langchain-0.0.101-py3-none-any.whl", hash = "sha256:dabaa5085f485a303b7fb19c9b7b646ab4e7279b29092871763db86a43662a10"},
-    {file = "langchain-0.0.101.tar.gz", hash = "sha256:ee3945c0b8f2d6ba34e5ba63d9362578290269d02999b0049206b508be11e5cc"},
+    {file = "langchain-0.0.108-py3-none-any.whl", hash = "sha256:c653f2eb50cee09727fc54885b941303b9abbe58af80dcc8311b61ba60f6652b"},
+    {file = "langchain-0.0.108.tar.gz", hash = "sha256:e0a80bfc4a5eb3805105bc13914a8a9832dde7da8183ba6c2ff31436e040af87"},
 ]
 
 [package.dependencies]
@@ -3511,4 +3511,4 @@ load-raw-data = ["unstructured", "pypdf"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2cb2c77ec2e14ae25f35e6a161fcf582f0c9659c0d75ebbba62349aedf9c353d"
+content-hash = "f5b6c51b98a78a57f4e099fbe8b36a2232fdb82c982d488723be79c34ed34868"
