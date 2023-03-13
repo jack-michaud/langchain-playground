@@ -88,6 +88,16 @@ def add_new_document_to_vector_db(
     vector_db.vectorstore.add_documents([document])
 
 
+def remove_document_from_vector_db(
+    vector_db: VectorStoreIndexWrapper,
+    document: Document,
+):
+    import pdb
+
+    pdb.set_trace()
+    vector_db.vectorstore.remove_documents([document])
+
+
 if __name__ == "__main__":
     # create_milvus_collection(recreate=True)
     create_milvus_index()

@@ -7,7 +7,8 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.llms import OpenAI, OpenAIChat
 from langchain.prompts import Prompt, PromptTemplate
 
-from milvus_db import add_new_document_to_vector_db, vector_db_wrapper
+from milvus_db import (add_new_document_to_vector_db,
+                       remove_document_from_vector_db, vector_db_wrapper)
 
 
 @tool("ask_for_approval")
@@ -65,7 +66,13 @@ def search_memory(query: str) -> str:
     chain = LLMChain(llm=OpenAI(), prompt=prompt)
 
     print(f"Two memories: {documents[0].page_content} and {documents[1].page_content}")
-    return chain.run(
+    remove_document_from_vector_db(milvus, documents[0])
+    remove_document_from_vector_db(milvus, documents[1])
+    result = chain.run(
         document1=documents[0].page_content,
         document2=documents[1].page_content,
     )
+
+    add_memory(result)
+
+    return result
