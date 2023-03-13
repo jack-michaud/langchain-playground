@@ -1,8 +1,13 @@
 import subprocess
-from milvus_db import vector_db_wrapper, add_new_document_to_vector_db
-from langchain.docstore.document import Document
 
 from langchain.agents import tool
+from langchain.chains import LLMChain
+from langchain.docstore.document import Document
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.llms import OpenAI, OpenAIChat
+from langchain.prompts import Prompt, PromptTemplate
+
+from milvus_db import add_new_document_to_vector_db, vector_db_wrapper
 
 
 @tool("ask_for_approval")
@@ -31,16 +36,36 @@ def query_personal_knowledge_management(query: str) -> str:
 
     return f'You said: {response.decode("utf-8").strip()}'
 
+
 @tool("add_memory")
 def add_memory(document: str) -> str:
-    """Store a memory."""
+    """Store a memory. This should be a narrative which includes feelings and facts about the topic."""
     milvus = vector_db_wrapper()
     doc = Document(page_content=document)
     add_new_document_to_vector_db(milvus, doc)
-    return f'I will contemplate what was said here.'
+    return f"I will contemplate what was said here."
+
 
 @tool("search_memory")
 def search_memory(query: str) -> str:
-    """Store a memory."""
+    """Search my memories."""
     milvus = vector_db_wrapper()
-    return milvus.query(query)
+    embeddings = OpenAIEmbeddings()
+    documents = milvus.vectorstore.similarity_search(query, 2)
+    if len(documents) == 0:
+        return "I have no memory of this."
+    if len(documents) == 1:
+        return f"I remember this:\n\n{documents[0].page_content}"
+
+    # Combine these memories
+    prompt = PromptTemplate(
+        input_variables=["document1", "document2"],
+        template="Combine these two stories:\n\n{document1}\n\n{document2}",
+    )
+    chain = LLMChain(llm=OpenAI(), prompt=prompt)
+
+    print(f"Two memories: {documents[0].page_content} and {documents[1].page_content}")
+    return chain.run(
+        document1=documents[0].page_content,
+        document2=documents[1].page_content,
+    )
