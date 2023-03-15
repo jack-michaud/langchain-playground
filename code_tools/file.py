@@ -1,3 +1,19 @@
+"""
+python code_tools/file.py when-is "How does the ask_question_about_project agent work?" /home/jack/Code/github.com/jack-michaud/langchain-playground/
+
+> The ask_question_about_project agent uses the search_for_references tool to find files in the project that contain the given identifier using ripgrep. 
+> It then uses the answer_question_about_code_in_file agent to answer questions about the code in the file.
+
+python code_tools/file.py when-is "How does answer_question_about_code_in_file work?" /home/jack/Code/github.com/jack-michaud/langchain-playground/
+
+> answer_question_about_code_in_file takes a filename and a question as input, loads the file, and summarizes the code to answer the question 
+> if the file is small enough.
+
+When a file is too big, it chunks it out into smaller files and uses the VectorDBQA agent to answer the question.
+The VectorDBQA uses embedding search to find the most similar code to the question and then uses a LLM to answer the question.
+
+
+"""
 from pathlib import Path
 from subprocess import CalledProcessError
 from typing import Optional
@@ -148,4 +164,11 @@ if __name__ == "__main__":
 
     # If using the "where else is this used" subparser, use ask_about_references_to_class_or_function to ask about the given identifier in the given project
     if hasattr(args, "action"):
-        print(ask_question_about_project(args.action, args.project_path))
+        for _ in range(3):
+            try:
+                print(ask_question_about_project(args.action, args.project_path))
+                break
+            except Exception as e:
+                print("Error: ", e)
+                print("Trying again...")
+                continue
