@@ -92,6 +92,7 @@ def ask_question_about_project(action: str, project_path: Path):
         # strip newlines and quotes from identifier
         identifier = identifier.strip()
         identifier = identifier.strip('"')
+        identifier = identifier.strip("'")
 
         llm = OpenAIChat()
         try:
@@ -105,7 +106,7 @@ def ask_question_about_project(action: str, project_path: Path):
             ).decode()
         except CalledProcessError:
             matches = (
-                "Command failed. Did you provide only one word for the identifier?"
+                "Command failed. Did you provide only one word for the action input?"
             )
 
         # prompt = PromptTemplate(
