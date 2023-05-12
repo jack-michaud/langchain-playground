@@ -2,6 +2,7 @@ from langchain.docstore.document import Document
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain.vectorstores import Milvus, VectorStore
+from pymilvus.exceptions import SchemaNotReadyException
 
 text_field = "document_text"
 
@@ -57,17 +58,24 @@ def create_milvus_index(collection_name: str = "default"):
 
 
 def get_vector_db(collection_name: str = "default") -> VectorStore:
-    return Milvus(
-        collection_name=collection_name,
-        text_field=text_field,
-        embedding_function=OpenAIEmbeddings(),
-        connection_args={},
-    )
+    try:
+        return Milvus(
+            collection_name=collection_name,
+            text_field=text_field,
+            embedding_function=OpenAIEmbeddings(),
+            connection_args={},
+        )
+    except SchemaNotReadyException:
+        create_milvus_index(collection_name=collection_name)
+        return Milvus(
+            collection_name=collection_name,
+            text_field=text_field,
+            embedding_function=OpenAIEmbeddings(),
+            connection_args={},
+        )
 
 
-def vector_db_wrapper(
-    vectorstore: VectorStore | None = None,
-) -> VectorStoreIndexWrapper:
+def vector_db_wrapper(collection_name: str = "default") -> VectorStoreIndexWrapper:
     """
     # Example
 
@@ -76,8 +84,7 @@ def vector_db_wrapper(
     >>> vectordb.query("What is the airspeed of a fully laden swallow?")
 
     """
-    if vectorstore is None:
-        vectorstore = get_vector_db()
+    vectorstore = get_vector_db(collection_name=collection_name)
     return VectorStoreIndexWrapper(vectorstore=vectorstore)
 
 
@@ -88,6 +95,17 @@ def add_new_document_to_vector_db(
     vector_db.vectorstore.add_documents([document])
 
 
+def remove_document_from_vector_db(
+    vector_db: VectorStoreIndexWrapper,
+    document: Document,
+):
+    import pdb
+
+    pdb.set_trace()
+    vector_db.vectorstore.remove_documents([document])
+
+
 if __name__ == "__main__":
     # create_milvus_collection(recreate=True)
-    create_milvus_index()
+    create_milvus_collection("knowledgebase", recreate=True)
+    create_milvus_index(collection_name="knowledgebase")

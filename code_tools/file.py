@@ -20,6 +20,7 @@ from typing import Optional
 
 from dotenv import load_dotenv
 from langchain.agents import initialize_agent, tool
+from langchain.agents.mrkl.prompt import SUFFIX
 from langchain.chains import LLMChain
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain.llms import OpenAIChat
@@ -126,6 +127,10 @@ def ask_question_about_project(action: str, project_path: Path):
         verbose=True,
         agent="zero-shot-react-description",
         max_iterations=10,
+        agent_kwargs={
+            "suffix": "A concrete example:\n\nAction: search_for_references\nAction Input: identifier\n\n"
+            + SUFFIX
+        },
     )
     return agent(
         f"{action} Feel free to ignore tests and other files that are not relevant."
